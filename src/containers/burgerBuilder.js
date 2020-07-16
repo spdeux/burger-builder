@@ -7,15 +7,19 @@ import OrderSummary from "../components/Burger/OrderSummary/orderSummary";
 import axios from "../axios-orders";
 import Spinner from "../components/UI/Spinner/spinner";
 import ErrorHandler from "../../src/hoc/errorHandler/errorHandler";
-import * as actionType from "../store/action";
+import * as actions from "../store/actions/index";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 
 class BurgerBuilder extends Component {
   state = {
     purchasable: false,
     purchasing: false,
-    loading: false,
   };
+
+  componentDidMount() {
+    this.props.onInitIngredients();
+  }
 
   updatePurchaseState = (ingriedient) => {
     const ingredientValues = Object.values(ingriedient);
@@ -33,22 +37,8 @@ class BurgerBuilder extends Component {
   };
 
   purchaseContinueHandler = () => {
+    this.props.onInitPurchased();
     this.props.history.push("/checkout");
-
-    // const queryParams = [];
-    // for (let i in this.state.ingredients) {
-    //   queryParams.push(
-    //     encodeURIComponent(i) +
-    //       "=" +
-    //       encodeURIComponent(this.state.ingredients[i])
-    //   );
-    // }
-    // queryParams.push(`price=${this.state.totalPrice}`);
-    // let queryString = queryParams.join("&");
-    // this.props.history.push({
-    //   pathname: "/checkout",
-    //   search: "?" + queryString,
-    // });
   };
 
   render() {
@@ -84,10 +74,6 @@ class BurgerBuilder extends Component {
       );
     }
 
-    if (this.state.loading) {
-      orderSummary = <Spinner />;
-    }
-
     return (
       <Aux>
         <Modal
@@ -104,17 +90,24 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingredients,
-    price: state.totalPrice,
+    ings: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    error: state.burgerBuilder.error,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
     onIngredientsAdded: (name) => {
-      dispatch({ type: actionType.ADD_INGREDIENT, name: name });
+      dispatch(actions.addIngredient(name));
     },
     onIngredientsRemoved: (name) => {
-      dispatch({ type: actionType.REMOVE_INGREDIENT, name: name });
+      dispatch(actions.removeIngredient(name));
+    },
+    onInitIngredients: () => {
+      dispatch(actions.initIngredients());
+    },
+    onInitPurchased: () => {
+      dispatch(actions.purchaseInit());
     },
   };
 };
@@ -122,4 +115,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ErrorHandler(BurgerBuilder, axios));
+)(withRouter(ErrorHandler(BurgerBuilder, axios)));
