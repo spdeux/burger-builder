@@ -3,7 +3,6 @@ import CheckoutSummary from "../../components/Order/CheckoutSummary/checkoutSumm
 import { Route, Redirect } from "react-router-dom";
 import ContactData from "./ContactData/contactData";
 import { connect } from "react-redux";
-import * as actions from "../../store/actions/index";
 
 class Checkout extends Component {
   checkoutCancelledHandler = () => {
@@ -14,7 +13,6 @@ class Checkout extends Component {
     this.props.history.replace("/checkout/contact-data");
   };
   render() {
-    console.log("purchased props", this.props.purchased);
     const purchasedRedirect = this.props.purchased ? <Redirect to="/" /> : null;
     return (
       <div>
