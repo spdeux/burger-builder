@@ -11,7 +11,7 @@ import * as actions from "../store/actions/index";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
   state = {
     purchasable: false,
     purchasing: false,
